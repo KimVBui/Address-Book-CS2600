@@ -23,6 +23,7 @@ Status load_file(AddressBook *address_book)
 		}
 		return false;
 	} //unsure if im doing this right, modify if you wish
+	
 	if (ret == 0)
 	{
 		/* 
