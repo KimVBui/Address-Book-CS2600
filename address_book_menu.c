@@ -19,8 +19,15 @@ int get_option(int type, const char *msg)
 	 * Read an number
 	 * Read a charcter
 	 */ 
+	/* Fill the code to add above functionality */	
+	int num;
+	char m;
 
-	/* Fill the code to add above functionality */
+	if (getchar() == '\n'){
+		scanf("%d", num);
+		scanf("%s", m);
+	}
+	return 0;
 }
 
 Status save_prompt(AddressBook *address_book)
@@ -50,10 +57,12 @@ Status save_prompt(AddressBook *address_book)
 Status list_contacts(AddressBook *address_book, const char *title, int *index, const char *msg, Modes mode)
 {
 	/* 
-	 * Add code to list all the contacts availabe in address_book.csv file
+	 * Add code to list all the contacts availabe in address_book.csv file	
 	 * Should be menu based
 	 * The menu provide navigation option if the entries increase the page size
 	 */ 
+
+
 
 	return e_success;
 }
@@ -136,6 +145,21 @@ Status menu(AddressBook *address_book)
 Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
+	printf("0. Back");
+	printf("1. Name: ");
+	printf("2. Phone No 1: ");
+	printf("3. Email ID 1:");
+	if (getChar() == '1'){
+		char newChar;
+		scanf("%c",newChar);
+	}
+	if(getChar() == '2'){
+		int newPho;
+		scanf("%d", newPho);
+	}
+	//unfinished, will finish later -Kimberly
+
+	printf
 }
 
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)

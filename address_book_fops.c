@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #include "address_book.h"
 
@@ -15,7 +16,14 @@ Status load_file(AddressBook *address_book)
 	/* 
 	 * Check for file existance
 	 */
-
+	bool file_exists(const char *filename){
+		FILE *file;
+		if((file = fopen(filename, "r"))){
+			return true;
+		}
+		return false;
+	} //unsure if im doing this right, modify if you wish
+	
 	if (ret == 0)
 	{
 		/* 
