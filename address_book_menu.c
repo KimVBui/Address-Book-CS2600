@@ -19,8 +19,12 @@ int get_option(int type, const char *msg)
 	 * Read an number
 	 * Read a charcter
 	 */ 
-
 	/* Fill the code to add above functionality */
+	if (getchar() == '\n'){
+		scanf("%d", type);
+		scanf("%c", msg);
+	}
+	return 0
 }
 
 Status save_prompt(AddressBook *address_book)
