@@ -13,21 +13,47 @@
 
 int get_option(int type, const char *msg)
 {
-	/*
-	 * Mutilfuction user intractions like
-	 * Just an enter key detection
-	 * Read an number
-	 * Read a charcter
-	 */ 
-	/* Fill the code to add above functionality */	
-	int num;
-	char m;
+		char buffer[64];
 
-	if (getchar() == '\n'){
-		scanf("%d", num);
-		scanf("%s", m);
+	/*Print message if provided*/
+	if(msg && msg[0] != '\0')
+	{
+		printf("%s", msg);
+		fflush(stdout);
 	}
-	return 0;
+
+	/*Read input*/
+	if(fgets(buffer, sizeof(buffer), stdin)== NULL)
+	{
+		return e_fail;
+	}
+
+	/*If user just pressed ENTER*/
+	if(buffer[0]=="\n")
+	{
+		return e_new_line;
+	}
+
+	/*Remove newline character*/
+	buffer[strcspn(buffer, "\n")] = '\0';
+
+	if(type == NONE)
+	{
+		/*Just wait for enter*/
+		return e_success;
+	}
+	else if (type == NUM)
+	{
+		/*Convert to integer*/
+		return atoi(buffer);
+	}
+	else if (type == CHAR)
+	{
+		/*Return first character*/
+		return buffer[0];
+	}
+
+	return e_fail;
 }
 
 Status save_prompt(AddressBook *address_book)
