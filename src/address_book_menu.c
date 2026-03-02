@@ -11,6 +11,8 @@
 //#include "abk_menus.h"
 //#include "abk.h"
 
+
+//example input "get_option(NONE, "Press ENTER...");"
 int get_option(int type, const char *msg)
 {
 		char buffer[64];
@@ -80,17 +82,93 @@ Status save_prompt(AddressBook *address_book)
 	return e_success;
 }
 
+//example input "list_contacts(address_book, "All Contacts", NULL, "Enter option: ", e_list);"
 Status list_contacts(AddressBook *address_book, const char *title, int *index, const char *msg, Modes mode)
 {
-	/* 
-	 * Add code to list all the contacts availabe in address_book.csv file	
-	 * Should be menu based
-	 * The menu provide navigation option if the entries increase the page size
-	 */ 
+	int start = 0;
 
+	if(!address_book || address_book->count==0)
+	{
+		get_option(NONE, "No contacts found. Press Enter...");
+		return e_no_match;
+	}
 
+	while (1)
+	{
+		menu_header(title);
 
-	return e_success;
+		printf("SI.No  Name                             Phone(1)           Email(1)\n");
+        printf("-----  ------------------------------   ----------------   ------------------------------\n");
+		
+		int end = start + WINDOW_SIZE;
+		if (end > address_book->count)
+		{
+			end = address_book->count;
+		}
+
+		for (int i = start; i<end; i++)
+		{
+			ContactInfo *c = &address_book->list[i];
+			
+			printf("%-5d  %-30s   %-16s   %-30s\n",
+                   c->si_no,
+                   c->name[0],
+                   c->phone_numbers[0],
+                   c->email_addresses[0]);
+		}
+
+		printf("\nShowing %d to %d of %d\n",
+			start +1,
+			end,
+			address_book->count);
+		
+		if (mode == e_list)
+		{
+			printf("Options: N-next, P-prev, B-back\n");
+		}
+		else
+		{
+			printf("Options: N-next, P-prev, S-select, B-back\n");
+		}
+
+		int ch = get_option(CHAR, msg ? msg : "Enter option: ");
+        ch = toupper(ch);
+
+		if (ch == 'N')
+        {
+            if (end < address_book->count)
+                start += WINDOW_SIZE;
+        }
+        else if (ch == 'P')
+        {
+            start -= WINDOW_SIZE;
+            if (start < 0)
+                start = 0;
+        }
+        else if (ch == 'B' || ch == e_new_line)
+        {
+            return e_back;
+        }
+        else if (ch == 'S' && mode != e_list)
+        {
+            int sel = get_option(NUM, "Enter SI.No to select: ");
+
+            if (sel < 1 || sel > address_book->count)
+            {
+                get_option(NONE, "Invalid SI.No. Press ENTER...");
+                continue;
+            }
+
+            if (index)
+                *index = sel - 1;   /* convert SI.No to array index */
+
+            return e_success;
+        }
+        else
+        {
+            get_option(NONE, "Invalid option. Press ENTER...");
+        }
+	}
 }
 
 void menu_header(const char *str)
