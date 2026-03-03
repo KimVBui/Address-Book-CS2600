@@ -87,30 +87,40 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 {
 	int start = 0;
 
-	//checks to see if there isn't an address book or if there aren't any contacts at all
+	//checks to see if the addressbook pointer is null or if there's nothing stored
+	//if so we couldn't save anything so it says no contacts found.
 	if(!address_book || address_book->count==0)
 	{
 		get_option(NONE, "No contacts found. Press Enter...");
 		return e_no_match;
 	}
 
+	//infinite loop to keep the user within the list menu until they go back
 	while (1)
 	{
+		//clears the screen to print out the title
 		menu_header(title);
 
+		//printing out the table of contacts
 		printf("SI.No  Name                             Phone(1)           Email(1)\n");
         printf("-----  ------------------------------   ----------------   ------------------------------\n");
-		
+
+		//Determines the ending index for the page
+		//WindowSize is how many contacts should be shown per page
 		int end = start + WINDOW_SIZE;
+
+		//makes sure we don't go past the total contact count
 		if (end > address_book->count)
 		{
 			end = address_book->count;
 		}
 
+		//loops through contacts in the current page
 		for (int i = start; i<end; i++)
 		{
 			ContactInfo *c = &address_book->list[i];
-			
+
+			//prints the first phone and email for clean format
 			printf("%-5d  %-30s   %-16s   %-30s\n",
                    c->si_no,
                    c->name[0],
@@ -118,53 +128,76 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
                    c->email_addresses[0]);
 		}
 
+		//displays page number info
 		printf("\nShowing %d to %d of %d\n",
 			start +1,
 			end,
 			address_book->count);
-		
+
+		//if only listing stuff, show navigation options
 		if (mode == e_list)
 		{
 			printf("Options: N-next, P-prev, B-back\n");
 		}
 		else
 		{
+			//if using this for edit/search/delete
+			//allows selection of a contact
 			printf("Options: N-next, P-prev, S-select, B-back\n");
 		}
 
+		//gets a single character of user input and converts to uppercase
 		int ch = get_option(CHAR, msg ? msg : "Enter option: ");
         ch = toupper(ch);
 
+
+		//NAVIGATION HANDLNG
+
+		//next page
 		if (ch == 'N')
         {
+			//only go forward if there are contacts ahead
             if (end < address_book->count)
+			{
                 start += WINDOW_SIZE;
+			}
         }
+		//previous page
         else if (ch == 'P')
         {
             start -= WINDOW_SIZE;
+			//prevents negative index
             if (start < 0)
+			{
                 start = 0;
+			}
         }
+		//back to preious menu
         else if (ch == 'B' || ch == e_new_line)
         {
             return e_back;
         }
+		//Selection option (only if not simple listing) (MAY NOT BE NECESSARY, delete if so)
         else if (ch == 'S' && mode != e_list)
         {
+			//asks user for serial number
             int sel = get_option(NUM, "Enter SI.No to select: ");
 
+			//validates serial number
             if (sel < 1 || sel > address_book->count)
             {
                 get_option(NONE, "Invalid SI.No. Press ENTER...");
                 continue;
             }
 
+			//converts serial number to array index
             if (index)
+			{
                 *index = sel - 1;   /* convert SI.No to array index */
-
-            return e_success;
+			}
+            return e_success; //return success with selected index
         }
+		//any invalid input
         else
         {
             get_option(NONE, "Invalid option. Press ENTER...");
@@ -286,4 +319,5 @@ Status delete_contact(AddressBook *address_book)
 {
 	/* Add the functionality for delete contacts here */
 }
+
 
