@@ -11,23 +11,51 @@
 //#include "abk_menus.h"
 //#include "abk.h"
 
+
+//example input "get_option(NONE, "Press ENTER...");"
 int get_option(int type, const char *msg)
 {
-	/*
-	 * Mutilfuction user intractions like
-	 * Just an enter key detection
-	 * Read an number
-	 * Read a charcter
-	 */ 
-	/* Fill the code to add above functionality */	
-	int num;
-	char m;
+		char buffer[64];
 
-	if (getchar() == '\n'){
-		scanf("%d", num);
-		scanf("%s", m);
+	/*Print message if provided*/
+	if(msg && msg[0] != '\0')
+	{
+		printf("%s", msg);
+		fflush(stdout);
 	}
-	return 0;
+
+	/*Read input*/
+	if(fgets(buffer, sizeof(buffer), stdin)== NULL)
+	{
+		return e_fail;
+	}
+
+	/*If user just pressed ENTER*/
+	if(buffer[0]=="\n")
+	{
+		return e_new_line;
+	}
+
+	/*Remove newline character*/
+	buffer[strcspn(buffer, "\n")] = '\0';
+
+	if(type == NONE)
+	{
+		/*Just wait for enter*/
+		return e_success;
+	}
+	else if (type == NUM)
+	{
+		/*Convert to integer*/
+		return atoi(buffer);
+	}
+	else if (type == CHAR)
+	{
+		/*Return first character*/
+		return buffer[0];
+	}
+
+	return e_fail;
 }
 
 Status save_prompt(AddressBook *address_book)
@@ -54,17 +82,94 @@ Status save_prompt(AddressBook *address_book)
 	return e_success;
 }
 
+//example input "list_contacts(address_book, "All Contacts", NULL, "Enter option: ", e_list);"
 Status list_contacts(AddressBook *address_book, const char *title, int *index, const char *msg, Modes mode)
 {
-	/* 
-	 * Add code to list all the contacts availabe in address_book.csv file	
-	 * Should be menu based
-	 * The menu provide navigation option if the entries increase the page size
-	 */ 
+	int start = 0;
 
+	//checks to see if there isn't an address book or if there aren't any contacts at all
+	if(!address_book || address_book->count==0)
+	{
+		get_option(NONE, "No contacts found. Press Enter...");
+		return e_no_match;
+	}
 
+	while (1)
+	{
+		menu_header(title);
 
-	return e_success;
+		printf("SI.No  Name                             Phone(1)           Email(1)\n");
+        printf("-----  ------------------------------   ----------------   ------------------------------\n");
+		
+		int end = start + WINDOW_SIZE;
+		if (end > address_book->count)
+		{
+			end = address_book->count;
+		}
+
+		for (int i = start; i<end; i++)
+		{
+			ContactInfo *c = &address_book->list[i];
+			
+			printf("%-5d  %-30s   %-16s   %-30s\n",
+                   c->si_no,
+                   c->name[0],
+                   c->phone_numbers[0],
+                   c->email_addresses[0]);
+		}
+
+		printf("\nShowing %d to %d of %d\n",
+			start +1,
+			end,
+			address_book->count);
+		
+		if (mode == e_list)
+		{
+			printf("Options: N-next, P-prev, B-back\n");
+		}
+		else
+		{
+			printf("Options: N-next, P-prev, S-select, B-back\n");
+		}
+
+		int ch = get_option(CHAR, msg ? msg : "Enter option: ");
+        ch = toupper(ch);
+
+		if (ch == 'N')
+        {
+            if (end < address_book->count)
+                start += WINDOW_SIZE;
+        }
+        else if (ch == 'P')
+        {
+            start -= WINDOW_SIZE;
+            if (start < 0)
+                start = 0;
+        }
+        else if (ch == 'B' || ch == e_new_line)
+        {
+            return e_back;
+        }
+        else if (ch == 'S' && mode != e_list)
+        {
+            int sel = get_option(NUM, "Enter SI.No to select: ");
+
+            if (sel < 1 || sel > address_book->count)
+            {
+                get_option(NONE, "Invalid SI.No. Press ENTER...");
+                continue;
+            }
+
+            if (index)
+                *index = sel - 1;   /* convert SI.No to array index */
+
+            return e_success;
+        }
+        else
+        {
+            get_option(NONE, "Invalid option. Press ENTER...");
+        }
+	}
 }
 
 void menu_header(const char *str)
@@ -181,3 +286,4 @@ Status delete_contact(AddressBook *address_book)
 {
 	/* Add the functionality for delete contacts here */
 }
+
