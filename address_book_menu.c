@@ -142,14 +142,19 @@ Status add_contacts(AddressBook *address_book)
 	printf("1. Name: ");
 	printf("2. Phone No 1: ");
 	printf("3. Email ID 1:");
-	printf("Enter")
+	printf("Please select an Option:")
 	if (getChar() == '1'){
+		printf("Enter the name:\n")
 		char newChar;
 		scanf("%c",newChar);
 	}
 	if(getChar() == '2'){
+		prinf("Enter the Phone Number:\n")
 		int newPho;
 		scanf("%d", newPho);
+	}
+	if(getChar() == '3'){
+		
 	}
 	//unfinished, will finish later -Kimberly
 
