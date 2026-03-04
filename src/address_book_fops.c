@@ -11,31 +11,78 @@
 
 Status load_file(AddressBook *address_book)
 {
-	int ret;
-
+	int ret = 0; // ret is a control variable. 0 means the file is openable
+	char line [100];
+	int token_count = 0;
+	address_book -> count = 0;
+	address_book -> list = NULL;
+	address_book -> fp = NULL;
 	/* 
-	 * Check for file existance
+	 * Check for file existence
 	 */
-	bool file_exists(const char *filename){
-		FILE *file;
-		if((file = fopen(filename, "r"))){
-			return true;
-		}
-		return false;
-	} //unsure if im doing this right, modify if you wish
+	FILE *fp = fopen(DEFAULT_FILE,"r");
 	
-	if (ret == 0)
-	{
-		/* 
-		 * Do the neccessary step to open the file
-		 * Do error handling
-		 */ 
+	if (fp == NULL && errno == ENOENT){
+		ret = 1;
+	} 
+	else if (fp == NULL && errno != ENOENT ){
+		return e_fail;
+	} 
+	else {
+		ret = 0;
+		fclose(fp);
 	}
-	else
+	/* 
+	 * Create/open file based on file existence
+	 */
+	
+	if (ret == 1)
 	{
-		/* Create a file for adding entries */
+		fp = fopen(DEFAULT_FILE,"w");
+		if (fp != NULL ){
+			fclose(fp);
+			} 
+		else {
+			return e_fail;
+		}
 	}
-
+	fp = fopen(DEFAULT_FILE,"r");
+	if(fp == NULL){
+		return e_fail;
+	}
+	
+	while (fgets(line,100,fp)){
+		int is_blank = 1;
+        for (int i = 0; line[i] != '\0'; i++) {
+            if (!isspace((unsigned char)line[i])) {
+                is_blank = 0;
+				break;
+            }
+        }
+        if (is_blank) {
+            continue; // Skip the rest of the loop and read the next line
+        } else{
+			size_t len = strlen(line);
+			while (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r')) {
+    			line[len-1] = '\0';
+    			len--;
+			}
+			int token_count = 0;
+			printf("Raw:[%s]\n",line);
+			char* token;
+    		// Get the first token
+    		token = strtok(line, ",");
+			while (token != NULL) {
+        	printf("Token: %s\n", token);
+        	// Call strtok with NULL as the first argument to continue from the last position
+        	token = strtok(NULL,",");
+			token_count++;
+			}
+			printf("Tokens Count: %d\n",token_count);
+		}
+		
+	}
+	fclose(fp);
 	return e_success;
 }
 
