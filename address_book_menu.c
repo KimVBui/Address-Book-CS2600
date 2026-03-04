@@ -20,14 +20,7 @@ int get_option(int type, const char *msg)
 	 * Read a charcter
 	 */ 
 	/* Fill the code to add above functionality */	
-	int num;
-	char m;
-
-	if (getchar() == '\n'){
-		scanf("%d", num);
-		scanf("%s", m);
-	}
-	return 0;
+	
 }
 
 Status save_prompt(AddressBook *address_book)
@@ -149,6 +142,7 @@ Status add_contacts(AddressBook *address_book)
 	printf("1. Name: ");
 	printf("2. Phone No 1: ");
 	printf("3. Email ID 1:");
+	printf("Enter")
 	if (getChar() == '1'){
 		char newChar;
 		scanf("%c",newChar);
