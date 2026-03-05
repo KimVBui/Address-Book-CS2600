@@ -87,6 +87,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 {
 	int start = 0;
 
+	//checks to see if there isn't an address book or if there aren't any contacts at all
 	if(!address_book || address_book->count==0)
 	{
 		get_option(NONE, "No contacts found. Press Enter...");
@@ -601,3 +602,4 @@ Status delete_contact(AddressBook *address_book)
 {
 	/* Add the functionality for delete contacts here */
 }
+
