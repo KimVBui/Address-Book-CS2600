@@ -144,30 +144,38 @@ Status add_contacts(AddressBook *address_book)
 	printf("3. Email ID 1:");
 	printf("Please select an Option:" );
 	char op = getChar();
-	char newChar = "";
-	int newPho = "";
-	char newEm = "";
+	if (op == "0"){
+		main_menu();
+	}
+	char name = "";
+	int number = "";
+	char email = "";
+	//infinite loop until op == 0
 	while (0){
 		if (op == '1'){
 			printf("Enter the name:\n");
-			scanf("%c",newChar);
+			scanf("%c",name);
 		}
 		if(op == '2'){
 			prinf("Enter the Phone Number:\n");
-			scanf("%d", newPho);
+			scanf("%d", number);
 		}
-		if(getChar() == '3'){
+		if(op == '3'){
 			printf("Enter the Email ID: \n");
-			scanf("%c", newEm);
+			scanf("%c", email);
 		}
 		printf("0. Back");
-		printf("1. Name: %c", newChar);
-		printf("2. Phone No 1: %d", newPho);
-		printf("3. Email ID 1: %c", newEm);
+		printf("1. Name: %c", name);
+		printf("2. Phone No 1: %d", number);
+		printf("3. Email ID 1: %c", email);
 		printf("Please select an Option:" );
 		op = getChar();
 	}
 	//Gets all the inputs and puts them in the file
+	FILE *fptr;
+
+	fptr = fopen(address_book, "w");
+	
 	//here, goes back to the main menu
 	//unfinished, will finish later -Kimberly
 
