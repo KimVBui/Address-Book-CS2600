@@ -13,9 +13,9 @@ Status load_file(AddressBook *address_book)
 {
 	int ret = 0; // ret is a control variable. 0 means the file is openable
 	char line [100];
-	int token_count = 0;
-	address_book -> count = 0;
-	address_book -> list = NULL;
+	address_book->count = 0;
+	int tempCount = 0;
+	address_book->list = NULL;
 	address_book -> fp = NULL;
 	/* 
 	 * Check for file existence
@@ -33,7 +33,7 @@ Status load_file(AddressBook *address_book)
 		fclose(fp);
 	}
 	/* 
-	 * Create/open file based on file existence
+	 * Create & open failed file 
 	 */
 	
 	if (ret == 1)
@@ -50,7 +50,12 @@ Status load_file(AddressBook *address_book)
 	if(fp == NULL){
 		return e_fail;
 	}
-	
+
+	/* 
+	 * Loop through the file, read each line, and stores the amount of lines in it
+	 */
+
+	fgets(line,100,fp);
 	while (fgets(line,100,fp)){
 		int is_blank = 1;
         for (int i = 0; line[i] != '\0'; i++) {
@@ -67,21 +72,70 @@ Status load_file(AddressBook *address_book)
     			line[len-1] = '\0';
     			len--;
 			}
-			int token_count = 0;
-			printf("Raw:[%s]\n",line);
-			char* token;
-    		// Get the first token
-    		token = strtok(line, ",");
-			while (token != NULL) {
-        	printf("Token: %s\n", token);
-        	// Call strtok with NULL as the first argument to continue from the last position
-        	token = strtok(NULL,",");
-			token_count++;
-			}
-			printf("Tokens Count: %d\n",token_count);
+			tempCount++;
 		}
-		
 	}
+	fclose(fp);
+
+	if(tempCount == 0){
+		address_book->list = NULL;
+		address_book -> count = 0;
+		return e_success;
+	}
+	
+	if (tempCount > 0)
+	{
+		address_book->list = malloc(tempCount* sizeof(ContactInfo));
+		if (address_book->list == NULL) {
+    		return e_fail;
+		}
+		address_book->count = tempCount;
+	}
+
+	/* 
+	 * Reopen the file
+	 */
+	fp = fopen(DEFAULT_FILE,"r");
+
+	if (fp == NULL && errno != ENOENT ){
+		return e_fail;
+	} 
+	/* 
+	 * Loop through the file, read each line, get data and store it in memory
+	 */
+	int index = 0;
+	fgets(line,100,fp);
+	while (fgets(line,100,fp)){
+		int is_blank = 1;
+        for (int i = 0; line[i] != '\0'; i++) {
+            if (!isspace((unsigned char)line[i])) {
+                is_blank = 0;
+				break;
+            }
+        }
+        if (is_blank) {
+            continue; // Skip the rest of the loop and read the next line
+        } else{
+			size_t len = strlen(line);
+			while (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r')) {
+    			line[len-1] = '\0';
+    			len--;
+			}
+			char* name_token,*email_token,*phone_number_token;
+    		// Get tokens
+    		name_token = strtok(line, ",");
+			phone_number_token = strtok(NULL, ",");
+			email_token = strtok(NULL, ","); 
+			if(name_token == NULL || phone_number_token == NULL || email_token == NULL){
+				continue;
+			}
+			strcpy(address_book->list[index].name[0], name_token);
+			strcpy(address_book->list[index].phone_numbers[0], phone_number_token);
+			strcpy(address_book->list[index].email_addresses[0], email_token);
+			index++;
+		}
+	}
+address_book->count = index;
 	fclose(fp);
 	return e_success;
 }
