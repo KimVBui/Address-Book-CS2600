@@ -138,25 +138,37 @@ Status menu(AddressBook *address_book)
 Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
-	
 	printf("0. Back");
 	printf("1. Name: ", );
 	printf("2. Phone No 1: ");
 	printf("3. Email ID 1:");
-	printf("Please select an Option:")
-	if (getChar() == '1'){
-		printf("Enter the name:\n")
-		char newChar;
-		scanf("%c",newChar);
+	printf("Please select an Option:" );
+	char op = getChar();
+	char newChar = "";
+	int newPho = "";
+	char newEm = "";
+	while (0){
+		if (op == '1'){
+			printf("Enter the name:\n");
+			scanf("%c",newChar);
+		}
+		if(op == '2'){
+			prinf("Enter the Phone Number:\n");
+			scanf("%d", newPho);
+		}
+		if(getChar() == '3'){
+			printf("Enter the Email ID: \n");
+			scanf("%c", newEm);
+		}
+		printf("0. Back");
+		printf("1. Name: %c", newChar);
+		printf("2. Phone No 1: %d", newPho);
+		printf("3. Email ID 1: %c", newEm);
+		printf("Please select an Option:" );
+		op = getChar();
 	}
-	if(getChar() == '2'){
-		prinf("Enter the Phone Number:\n")
-		int newPho;
-		scanf("%d", newPho);
-	}
-	if(getChar() == '3'){
-
-	}
+	//Gets all the inputs and puts them in the file
+	//here, goes back to the main menu
 	//unfinished, will finish later -Kimberly
 
 	printf
