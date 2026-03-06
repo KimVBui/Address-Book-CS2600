@@ -152,7 +152,11 @@ Status save_file(AddressBook *address_book)
 	{
 		return e_fail;
 	}
-
+	fprintf(address_book->fp,"Name,Phone,Email\n");
+	for (int i= 0; i < address_book->count; i++){
+		fprintf(address_book->fp,"%s,%s,%s\n",address_book->list[i].name[0],
+			address_book->list[i].phone_numbers[0],address_book->list[i].email_addresses[0]);
+	}
 	/* 
 	 * Add the logic to save the file
 	 * Make sure to do error handling
