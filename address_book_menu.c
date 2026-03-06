@@ -138,8 +138,9 @@ Status menu(AddressBook *address_book)
 Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
+	
 	printf("0. Back");
-	printf("1. Name: ");
+	printf("1. Name: ", );
 	printf("2. Phone No 1: ");
 	printf("3. Email ID 1:");
 	printf("Please select an Option:")
@@ -154,7 +155,7 @@ Status add_contacts(AddressBook *address_book)
 		scanf("%d", newPho);
 	}
 	if(getChar() == '3'){
-		
+
 	}
 	//unfinished, will finish later -Kimberly
 
