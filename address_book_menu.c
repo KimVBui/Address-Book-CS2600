@@ -174,7 +174,7 @@ Status add_contacts(AddressBook *address_book)
 	//Gets all the inputs and puts them in the file
 	FILE *fptr;
 
-	fptr = fopen(address_book, "w");
+	fptr = fopen(DEFAULT_FILE, "w");
 	
 	//here, goes back to the main menu
 	//unfinished, will finish later -Kimberly
