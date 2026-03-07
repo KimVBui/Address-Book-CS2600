@@ -138,18 +138,21 @@ Status menu(AddressBook *address_book)
 Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
+	FILE *fptr;
+
+	fptr = fopen(DEFAULT_FILE, "a");
+
 	printf("0. Back");
 	printf("1. Name: ", );
 	printf("2. Phone No 1: ");
 	printf("3. Email ID 1:");
 	printf("Please select an Option:" );
+
 	char op = getChar();
-	if (op == "0"){
-		main_menu();
-	}
 	char name = "";
 	int number = "";
 	char email = "";
+
 	//infinite loop until op == 0
 	while (0){
 		if (op == '1'){
@@ -171,10 +174,13 @@ Status add_contacts(AddressBook *address_book)
 		printf("Please select an Option:" );
 		op = getChar();
 	}
-	//Gets all the inputs and puts them in the file
-	FILE *fptr;
 
-	fptr = fopen(DEFAULT_FILE, "w");
+	if (op == "0"){
+		main_menu();
+	}
+	//Gets all the inputs and puts them in the file
+
+	fprintf = (fptr, "Name: %c; Phone: %d; Email: %c \n", name, number, email);
 	
 	//here, goes back to the main menu
 	//unfinished, will finish later -Kimberly
