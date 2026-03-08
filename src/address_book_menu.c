@@ -255,7 +255,7 @@ Status menu(AddressBook *address_book)
 		switch (option)
 		{
 			case e_add_contact:
-				add_contract(address_book);
+				add_contacts(address_book);
 				break;
 			case e_search_contact:
 				search_contact(address_book);
@@ -290,7 +290,7 @@ Status add_contacts(AddressBook *address_book)
 
 	char op = get_option(NUM, " ");
 	//don't need to make new variables for name, email, etc, they already exist.
-	ContactInfo *newContract = &address_book->list[address_book->count];
+	ContactInfo *newContact = &address_book->list[address_book->count];
 	//The function up here, creates a pointer variable and addresses the enum function;
 	//Retrieves the memory address of address_book and goes to get the list from ContactInfo, and inside the list, it goes to receieve content of count from memory
 
@@ -298,28 +298,28 @@ Status add_contacts(AddressBook *address_book)
 	while (op == 0){
 		if (op == '1'){
 			printf("Enter the name:\n");
-			scanf("%s", (newContract->name[0])); //newContract is a pointer that references the variable in enum, and inside, addresses the location of the empty array spot
+			scanf("%s", (newContact->name[0])); //newContract is a pointer that references the variable in enum, and inside, addresses the location of the empty array spot
 			continue;
 		}
 		if(op == '2'){
-			prinf("Enter the Phone Number:\n");
-			scanf("%s", (newContract->phone_numbers[0])); //Note: How it works is that the list will update the num location but name and everything else can be 0 bc they are still within the first element for every list, at least that's how i see it
+			printf("Enter the Phone Number:\n");
+			scanf("%s", (newContact->phone_numbers[0])); //Note: How it works is that the list will update the num location but name and everything else can be 0 bc they are still within the first element for every list, at least that's how i see it
 			continue;
 		}
 		if(op == '3'){
 			printf("Enter the Email ID: \n");
-			scanf("%s", (newContract->email_addresses[0]));
+			scanf("%s", (newContact->email_addresses[0]));
 			continue;
 		}
 		printf("0. Back");
-		printf("1. Name: %c", newContract->name[0]);
-		printf("2. Phone No 1: %d", newContract->phone_numbers[0]);
-		printf("3. Email ID 1: %c", newContract->email_addresses[0]);
+		printf("1. Name: %c", newContact->name[0]);
+		printf("2. Phone No 1: %d", newContact->phone_numbers[0]);
+		printf("3. Email ID 1: %c", newContact->email_addresses[0]);
 		printf("Please select an Option: \n");
 		scanf("%s", op);
 	}
 	//should make the si_no for this entry the next num bc it usually starts at 0 and we want 1
-	newContract->si_no = address_book->count + 1;
+	newContact->si_no = address_book->count + 1;
 	address_book->count++; //increases the count to set up for the next entry
 	//Gets all the inputs and puts them in the file; nevermind, add contracts isn't supposed to save
 	//here, goes back to the main menn
@@ -330,7 +330,7 @@ Status search(const char *str, AddressBook *address_book, int loop_count, int fi
 {
 	/* Add the functionality for adding contacts here */
 	menu_header("Search Result:");
-	const char *searchFile = NULL;
+	char *searchFile = NULL;
 	int i; //num to search list.
 	char o; //temp var for exit
 
@@ -338,17 +338,18 @@ Status search(const char *str, AddressBook *address_book, int loop_count, int fi
 		printf("%s\n", msg);
 	}
 	for (int i = 0; i < address_book->count; i++){ //should have looped through the list and used i to find the one group
+		ContactInfo *newContact = &address_book->list[i];
 		switch(field){
 			case 1: //should go and check the names
-				searchFile = address_book->list[i].name;
+				searchFile = newContact->name[0];
 				break;
 			case 2: //same with numbers
-				searchFile = address_book->list[i].phone_numbers;
+				searchFile = newContact->phone_numbers[0];
 				break;
 			case 3: //same with email
-				searchFile = address_book->list[i].email_addresses;
+				searchFile = newContact->email_addresses[0];
 			case 4: //same with si num
-				searchFile = address_book->list[i].si_no;
+				sprintf(searchFile, "%d", newContact->si_no);
 			default:
 				return e_no_match;
 		}
@@ -380,6 +381,7 @@ Status search_contact(AddressBook *address_book)
 	}
 	char op = get_option(NUM, "Press Enter...");
 	char item;
+	char temp[2];
 
 	printf("0. Back\n");
 	printf("1. Name\n");
@@ -394,25 +396,25 @@ Status search_contact(AddressBook *address_book)
 			//search through names
 			printf("Please enter the name: ");
 			scanf("%s", item);
-			search(item, &address_book, NULL, 1, NULL, e_search); //idk if it should be null or 0 for loop count
+			search(&item, address_book, 0, 1, NULL, e_search); //idk if it should be null or 0 for loop count
 		}
 		else if(op == 2){
 			//search through phone numbers
 			printf("Please enter the number: ");
 			scanf("%s", item);
-			search(item, &address_book, NULL, 2, NULL, e_search);
+			search(&item, address_book, 0, 2, NULL, e_search);
 		}
 		else if(op == 3){ 
 			//search through email id
 			printf("Please enter the email id: ");
 			scanf("%s", item);
-			search(item, &address_book, NULL, 3, NULL, e_search);
+			search(&item, address_book, 0, 3, NULL, e_search);
 		}
 		else if(op == 4){
 			//search through si id
 			printf("Please enter the SI ID: ");
 			scanf("%s", item);
-			search(item, &address_book, NULL, 4, NULL, e_search);
+			search(&item, address_book, 0, 4, NULL, e_search);
 		}
 	}
 	if(op == 0){
