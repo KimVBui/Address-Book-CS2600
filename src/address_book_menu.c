@@ -255,7 +255,7 @@ Status menu(AddressBook *address_book)
 		switch (option)
 		{
 			case e_add_contact:
-				/* Add your implementation to call add_contacts function here */
+				add_contract(address_book);
 				break;
 			case e_search_contact:
 				search_contact(address_book);
@@ -283,29 +283,65 @@ Status menu(AddressBook *address_book)
 Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
-	while (0){
-		menu_header()
-		printf("0. Back\n");
-		printf("1. Name:\n");
-		printf("2. Phone No 1:\n");
-		printf("3. Email ID 1:\n");
-		if (getChar() == '1'){
-			char newChar;
-			scanf("%c",newChar);
-		}
-		if(getChar() == '2'){
-			int newPho;
-			scanf("%d", newPho);
-		}
+	if (address_book->count >= 5){
+		printf("Sorry, but your address book is full.")
 	}
-	//unfinished, will finish later -Kimberly
+	if(loadFile(address_book) == NULL){
+		fprintf
+	}
 
-	printf
+	char op;
+	//don't need to make new variables for name, email, etc, they already exist.
+	ContactInfo *newContract = &address_book->list[address_book->count];
+	//The function up here, creates a pointer variable and addresses the enum function;
+	//Retrieves the memory address of address_book and goes to get the list from ContactInfo, and inside the list, it goes to receieve content of count from memory
+
+	//infinite loop until op == 0
+	while (op == 0){
+		if (op == '1'){
+			printf("Enter the name:\n");
+			scanf("%s", (newContract->name[address_book->count])); //newContract is a pointer that references the variable in enum, and inside, addresses the location of the empty array spot
+		}
+		if(op == '2'){
+			prinf("Enter the Phone Number:\n");
+			scanf("%s", (newContract->phone_numbers[address_book->count]));
+		}
+		if(op == '3'){
+			printf("Enter the Email ID: \n");
+			scanf("%s", (newContract->email_addresses[address_book->count]));
+		}
+		printf("0. Back");
+		printf("1. Name: %c", newContract->name[address_book->count]);
+		printf("2. Phone No 1: %d", newContract->phone_numbers[address_book->count]);
+		printf("3. Email ID 1: %c", newContract->email_addresses[address_book->count]);
+		printf("Please select an Option:" );
+		op = getChar();
+	}
+	newContract->si_no = address_book->count + 1;
+	address_book->count++;
+	//Gets all the inputs and puts them in the file
+
+	//fprintf = (fptr, "Name: %c; Phone: %d; Email: %c \n", name, number, email);
+	
+	//here, goes back to the main menn
+
+	if (op == "0"){
+		e_save;
+		main_menu();
+	}
 }
 
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
 {
 	/* Add the functionality for adding contacts here */
+	char op = getChar();
+	printf("0. Back\n");
+	printf("1. Name\n");
+	printf("2. Phone No.\n");
+	printf("3. Email ID\n");
+	printf("4. Serial No.\n");
+	printf("\n");
+	printf("")
 }
 
 Status search_contact(AddressBook *address_book)
