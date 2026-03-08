@@ -110,7 +110,7 @@ Status menu(AddressBook *address_book)
 		switch (option)
 		{
 			case e_add_contact:
-				/* Add your implementation to call add_contacts function here */
+				add_contract(address_book);
 				break;
 			case e_search_contact:
 				search_contact(address_book);
@@ -180,12 +180,13 @@ Status add_contacts(AddressBook *address_book)
 	}
 	//Gets all the inputs and puts them in the file
 
-	fprintf = (fptr, "Name: %c; Phone: %d; Email: %c \n", name, number, email);
+	//fprintf = (fptr, "Name: %c; Phone: %d; Email: %c \n", name, number, email);
 	
 	//here, goes back to the main menn
 
 	printf
 	if (op == "0"){
+		e_save;
 		main_menu();
 	}
 }
