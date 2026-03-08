@@ -174,17 +174,12 @@ Status add_contacts(AddressBook *address_book)
 	}
 	newContract->si_no = address_book->count + 1;
 	address_book->count++;
-
-	if (op == "0"){
-		main_menu();
-	}
 	//Gets all the inputs and puts them in the file
 
 	//fprintf = (fptr, "Name: %c; Phone: %d; Email: %c \n", name, number, email);
 	
 	//here, goes back to the main menn
 
-	printf
 	if (op == "0"){
 		e_save;
 		main_menu();
