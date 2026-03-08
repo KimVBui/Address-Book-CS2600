@@ -285,10 +285,10 @@ Status add_contacts(AddressBook *address_book)
 	/* Add the functionality for adding contacts here */
 	menu_header("Adding Contracts");
 	if (address_book->count >= 5){
-		printf("Sorry, but your address book is full.")
+		printf("Sorry, but your address book is full.");
 	}
 
-	char op;
+	char op = get_option(NUM, " ");
 	//don't need to make new variables for name, email, etc, they already exist.
 	ContactInfo *newContract = &address_book->list[address_book->count];
 	//The function up here, creates a pointer variable and addresses the enum function;
