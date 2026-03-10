@@ -391,7 +391,7 @@ Status search_contact(AddressBook *address_book)
 	printf("\n");
 	printf("Please select an option: %s", op);
 
-	while (op == 0){
+	while (1){
 		if (op == 1){
 			//search through names
 			printf("Please enter the name: ");
@@ -417,9 +417,7 @@ Status search_contact(AddressBook *address_book)
 			search(&item, address_book, 0, 4, NULL, e_search);
 		}
 	}
-	if(op == 0){
-		main_menu();
-	}
+	main_menu();
 	return e_success;
 }
 
