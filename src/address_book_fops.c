@@ -44,7 +44,7 @@ Status load_file(AddressBook *address_book)
 		return e_fail;
 	}
 
-	// Read each of the non blank lines in the file.
+	// Read each of the non-blank lines in the file.
 	fgets(line,100,fp);
 	while (fgets(line,100,fp)){
 		int is_blank = 1;
@@ -143,3 +143,4 @@ Status save_file(AddressBook *address_book)
 
 	return e_success;
 }
+
