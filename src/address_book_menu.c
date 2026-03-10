@@ -16,7 +16,7 @@
 //example input "get_option(NONE, "Press ENTER...");"
 int get_option(int type, const char *msg)
 {
-		char buffer[64];
+	char buffer[64];
 
 	/*Print message if provided*/
 	if(msg && msg[0] != '\0')
@@ -32,7 +32,7 @@ int get_option(int type, const char *msg)
 	}
 
 	/*If user just pressed ENTER*/
-	if(buffer[0]=="\n")
+	if(buffer[0] == '\n')
 	{
 		return e_new_line;
 	}
@@ -53,6 +53,7 @@ int get_option(int type, const char *msg)
 	else if (type == CHAR)
 	{
 		/*Return first character*/
+
 		return buffer[0];
 	}
 
@@ -268,7 +269,7 @@ Status menu(AddressBook *address_book)
 				delete_contact(address_book);
 				break;
 			case e_list_contacts:
-				/* Add your implementation to call list_contacts function here */
+				list_contacts(address_book, "All Contacts", NULL, "Enter option: ", e_list);
 				break;
 			case e_save:
 				save_file(address_book);
@@ -285,42 +286,57 @@ Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
 	menu_header("Adding Contracts");
+
 	if (address_book->count >= 5){
 		printf("Sorry, but your address book is full.");
 	}
 
-	char op = get_option(NUM, " ");
-	//don't need to make new variables for name, email, etc, they already exist.
-	ContactInfo *newContact = &address_book->list[address_book->count];
+	char op;
+	
 	//The function up here, creates a pointer variable and addresses the enum function;
 	//Retrieves the memory address of address_book and goes to get the list from ContactInfo, and inside the list, it goes to receieve content of count from memory
 
+	char nameBuffer[NAME_LEN];
+	char phoneBuffer[NUMBER_LEN];
+	char emailBuffer[EMAIL_ID_LEN];
+
 	//infinite loop until op == 0
-	while (op == 0){
+	while (1){
+		printf("0. Leave\n");
+		printf("1. Name: %s\n", address_book->list[address_book->count].name);
+		// printf("2. Phone No 1: %s\n", address_book->list[address_book->count].phone_numbers);
+		// printf("3. Email ID 1: %s\n", address_book->list[address_book->count].email_addresses);
+
+		op = get_option(CHAR, "Enter option: ");
+
 		if (op == '1'){
 			printf("Enter the name:\n");
-			scanf("%s", (newContact->name[0])); //newContract is a pointer that references the variable in enum, and inside, addresses the location of the empty array spot
-			continue;
+			fgets(&nameBuffer, NAME_LEN, stdin); //reads string into the first name
+			nameBuffer[strcspn(nameBuffer, "\r\n")] = '\0'; //removes newline character
+			// strcpy(newContact->name[0], nameBuffer); //copies the name into the first name slot of the new contact
 		}
+
 		if(op == '2'){
 			printf("Enter the Phone Number:\n");
-			scanf("%s", (newContact->phone_numbers[0])); //Note: How it works is that the list will update the num location but name and everything else can be 0 bc they are still within the first element for every list, at least that's how i see it
-			continue;
+			fgets(&phoneBuffer, NUMBER_LEN, stdin);
+			phoneBuffer[strcspn(phoneBuffer, "\r\n")] = '\0';
+			// strcpy(address_book->list[address_book->count].phone_numbers, phoneBuffer);
 		}
+
 		if(op == '3'){
 			printf("Enter the Email ID: \n");
-			scanf("%s", (newContact->email_addresses[0]));
-			continue;
+			fgets(&emailBuffer, EMAIL_ID_LEN, stdin);
+			emailBuffer[strcspn(emailBuffer, "\r\n")] = '\0';
+			// strcpy(newContact->email_addresses[0], emailBuffer);
 		}
-		printf("0. Back");
-		printf("1. Name: %c", newContact->name[0]);
-		printf("2. Phone No 1: %d", newContact->phone_numbers[0]);
-		printf("3. Email ID 1: %c", newContact->email_addresses[0]);
-		printf("Please select an Option: \n");
-		scanf("%s", op);
+
+		if (op == '0'){
+			break;
+		}
+		
 	}
 	//should make the si_no for this entry the next num bc it usually starts at 0 and we want 1
-	newContact->si_no = address_book->count + 1;
+	// newContact->si_no = address_book->count + 1;
 	address_book->count++; //increases the count to set up for the next entry
 	//Gets all the inputs and puts them in the file; nevermind, add contracts isn't supposed to save
 	//here, goes back to the main menn
