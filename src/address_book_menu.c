@@ -124,7 +124,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 
 			//prints the first phone and email for clean format
 			printf("%-5d  %-30s   %-16s   %-30s\n",
-                   c->si_no + 1,
+                   i + 1,
                    c->name[0],
                    c->phone_numbers[0],
                    c->email_addresses[0]);
@@ -284,63 +284,70 @@ Status menu(AddressBook *address_book)
 
 Status add_contacts(AddressBook *address_book)
 {
-	/* Add the functionality for adding contacts here */
-	menu_header("Adding Contracts");
+    menu_header("Adding Contacts");
 
-	if (address_book->count >= 5){
-		printf("Sorry, but your address book is full.");
-	}
+	// Not sure if this is needed anymore, I don't think there will be issues with sizing if
+	// we are changing the size of the array.
 
-	char op;
-	
-	//The function up here, creates a pointer variable and addresses the enum function;
-	//Retrieves the memory address of address_book and goes to get the list from ContactInfo, and inside the list, it goes to receieve content of count from memory
+    // if (address_book->count >= 5) {
+    //     printf("Sorry, but your address book is full.\n");
+    //     return e_fail;
+    // }
 
-	char nameBuffer[NAME_LEN];
-	char phoneBuffer[NUMBER_LEN];
-	char emailBuffer[EMAIL_ID_LEN];
+	// Reallocate memory because address_book is getting bigger
 
-	//infinite loop until op == 0
-	while (1){
-		printf("0. Leave & Save\n");
-		printf("1. Name: %s\n", address_book->list[address_book->count].name);
-		printf("2. Phone No 1: %s\n", address_book->list[address_book->count].phone_numbers);
-		printf("3. Email ID 1: %s\n", address_book->list[address_book->count].email_addresses);
+    ContactInfo *new_list = realloc(address_book->list, (address_book->count + 1) * sizeof(ContactInfo));
+    if (new_list == NULL) {
+        return e_fail;
+    }
 
-		op = get_option(CHAR, "Enter option: ");
+    address_book->list = new_list;
 
-		if (op == '1'){
-			printf("Enter the name:\n");
-			fgets(&nameBuffer, NAME_LEN, stdin); //reads string into the first name
-			nameBuffer[strcspn(nameBuffer, "\r\n")] = '\0'; //removes newline character
-			strcpy(address_book->list[address_book->count].name, nameBuffer); //copies the name into the first name slot of the new contact
-		}
+    // Clear the new allocated memory
+    memset(&address_book->list[address_book->count], 0, sizeof(ContactInfo));
 
-		if(op == '2'){
-			printf("Enter the Phone Number:\n");
-			fgets(&phoneBuffer, NUMBER_LEN, stdin);
-			phoneBuffer[strcspn(phoneBuffer, "\r\n")] = '\0';
-			strcpy(address_book->list[address_book->count].phone_numbers, phoneBuffer);
-		}
+    char op;
+    char nameBuffer[NAME_LEN];
+    char phoneBuffer[NUMBER_LEN];
+    char emailBuffer[EMAIL_ID_LEN];
 
-		if(op == '3'){
-			printf("Enter the Email ID: \n");
-			fgets(&emailBuffer, EMAIL_ID_LEN, stdin);
-			emailBuffer[strcspn(emailBuffer, "\r\n")] = '\0';
-			strcpy(address_book->list[address_book->count].email_addresses, emailBuffer);
-		}
+    // infinite loop until we say stop
+    while (1) {
+        printf("0. Leave & Save\n");
+        printf("1. Name: %s\n", address_book->list[address_book->count].name[0]);
+        printf("2. Phone No 1: %s\n", address_book->list[address_book->count].phone_numbers[0]);
+        printf("3. Email ID 1: %s\n", address_book->list[address_book->count].email_addresses[0]);
 
-		if (op == '0'){
-			break;
-		}
-		
-	}
-	//should make the si_no for this entry the next num bc it usually starts at 0 and we want 1
-	// newContact->si_no = address_book->count + 1;
-	address_book->count++; //increases the count to set up for the next entry
-	//Gets all the inputs and puts them in the file; nevermind, add contracts isn't supposed to save
-	//here, goes back to the main menn
-	return e_success;
+        op = get_option(CHAR, "Enter option: ");
+
+        if (op == '1') {
+            printf("Enter the name:\n");
+            fgets(nameBuffer, NAME_LEN, stdin);
+            nameBuffer[strcspn(nameBuffer, "\r\n")] = '\0';
+            strcpy(address_book->list[address_book->count].name[0], nameBuffer);
+        }
+
+        if (op == '2') {
+            printf("Enter the Phone Number:\n");
+            fgets(phoneBuffer, NUMBER_LEN, stdin);
+            phoneBuffer[strcspn(phoneBuffer, "\r\n")] = '\0';
+            strcpy(address_book->list[address_book->count].phone_numbers[0], phoneBuffer);
+        }
+
+        if (op == '3') {
+            printf("Enter the Email ID: \n");
+            fgets(emailBuffer, EMAIL_ID_LEN, stdin);
+            emailBuffer[strcspn(emailBuffer, "\r\n")] = '\0';
+            strcpy(address_book->list[address_book->count].email_addresses[0], emailBuffer);
+        }
+
+        if (op == '0') {
+            break;
+        }
+    }
+
+    address_book->count++;
+    return e_success;
 }
 
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
@@ -814,4 +821,6 @@ Status delete_contact(AddressBook *address_book)
 			get_option(NONE, "Contact deleted. Press ENTER...");
 		}
 	}
+
+	return e_success;
 }
