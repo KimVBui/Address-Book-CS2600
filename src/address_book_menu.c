@@ -302,10 +302,10 @@ Status add_contacts(AddressBook *address_book)
 
 	//infinite loop until op == 0
 	while (1){
-		printf("0. Leave\n");
+		printf("0. Leave & Save\n");
 		printf("1. Name: %s\n", address_book->list[address_book->count].name);
-		// printf("2. Phone No 1: %s\n", address_book->list[address_book->count].phone_numbers);
-		// printf("3. Email ID 1: %s\n", address_book->list[address_book->count].email_addresses);
+		printf("2. Phone No 1: %s\n", address_book->list[address_book->count].phone_numbers);
+		printf("3. Email ID 1: %s\n", address_book->list[address_book->count].email_addresses);
 
 		op = get_option(CHAR, "Enter option: ");
 
@@ -313,21 +313,21 @@ Status add_contacts(AddressBook *address_book)
 			printf("Enter the name:\n");
 			fgets(&nameBuffer, NAME_LEN, stdin); //reads string into the first name
 			nameBuffer[strcspn(nameBuffer, "\r\n")] = '\0'; //removes newline character
-			// strcpy(newContact->name[0], nameBuffer); //copies the name into the first name slot of the new contact
+			strcpy(address_book->list[address_book->count].name, nameBuffer); //copies the name into the first name slot of the new contact
 		}
 
 		if(op == '2'){
 			printf("Enter the Phone Number:\n");
 			fgets(&phoneBuffer, NUMBER_LEN, stdin);
 			phoneBuffer[strcspn(phoneBuffer, "\r\n")] = '\0';
-			// strcpy(address_book->list[address_book->count].phone_numbers, phoneBuffer);
+			strcpy(address_book->list[address_book->count].phone_numbers, phoneBuffer);
 		}
 
 		if(op == '3'){
 			printf("Enter the Email ID: \n");
 			fgets(&emailBuffer, EMAIL_ID_LEN, stdin);
 			emailBuffer[strcspn(emailBuffer, "\r\n")] = '\0';
-			// strcpy(newContact->email_addresses[0], emailBuffer);
+			strcpy(address_book->list[address_book->count].email_addresses, emailBuffer);
 		}
 
 		if (op == '0'){
