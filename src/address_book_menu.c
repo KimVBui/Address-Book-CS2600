@@ -376,12 +376,15 @@ Status search(const char *str, AddressBook *address_book, int loop_count, int fi
 		printf(": S.No : Name				:Phone No				:Email ID				:\n");
 		printf("=============================================================================\n");
 		printf(": %s : %s : %s : %s :\n", address_book->list[i].si_no, address_book->list[i].name, address_book->list[i].phone_numbers, address_book->list[i].email_addresses);
-		printf("Press q to exit: ");
-		if(scanf("%s", o) == 'q'){
-			return e_success;
-		}
+
+		get_option(NONE, "Press ENTER...");
+
+		return e_success;
 	}
 	else{
+		
+		get_option(NONE, "No Match found! Press ENTER...");
+
 		return e_no_match;
 	}
 
@@ -396,8 +399,9 @@ Status search_contact(AddressBook *address_book)
 		printf("Sorry, there are no contacts to search through. Please add contacts first.\n");
 		return e_no_match;
 	}
-	char op = get_option(NUM, "Press Enter...");
-	char item;
+	
+	// Buffer of 100 characters
+	char item[100];
 	char temp[2];
 
 	printf("0. Back\n");
@@ -405,38 +409,60 @@ Status search_contact(AddressBook *address_book)
 	printf("2. Phone No.\n");
 	printf("3. Email ID\n");
 	printf("4. Serial No.\n");
-	printf("\n");
-	printf("Please select an option: %s", op);
 
-	while (op == 0){
-		if (op == 1){
-			//search through names
-			printf("Please enter the name: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 1, NULL, e_search); //idk if it should be null or 0 for loop count
-		}
-		else if(op == 2){
-			//search through phone numbers
-			printf("Please enter the number: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 2, NULL, e_search);
-		}
-		else if(op == 3){ 
-			//search through email id
-			printf("Please enter the email id: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 3, NULL, e_search);
-		}
-		else if(op == 4){
-			//search through si id
-			printf("Please enter the SI ID: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 4, NULL, e_search);
-		}
+	printf("\n");
+
+	char op = get_option(NUM, "Enter option: ");
+
+	if (op == 1){
+		//search through names
+		printf("Please enter the name: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 1, NULL, e_search); //idk if it should be null or 0 for loop count
 	}
-	if(op == 0){
-		main_menu();
+	else if(op == 2){
+		//search through phone numbers
+		printf("Please enter the number: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 2, NULL, e_search);
 	}
+	else if(op == 3){ 
+		//search through email id
+		printf("Please enter the email id: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 3, NULL, e_search);
+	}
+	else if(op == 4){
+		//search through si id
+		printf("Please enter the SI ID: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 4, NULL, e_search);
+	}
+
 	return e_success;
 }
 
