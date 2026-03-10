@@ -124,7 +124,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 
 			//prints the first phone and email for clean format
 			printf("%-5d  %-30s   %-16s   %-30s\n",
-                   c->si_no,
+                   c->si_no + 1,
                    c->name[0],
                    c->phone_numbers[0],
                    c->email_addresses[0]);
@@ -132,7 +132,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 
 		//displays page number info
 		printf("\nShowing %d to %d of %d\n",
-			start +1,
+			start + 1,
 			end,
 			address_book->count);
 
@@ -186,7 +186,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
             int sel = get_option(NUM, "Enter SI.No to select: ");
 
 			//validates serial number
-            if (sel < 1 || sel > address_book->count)
+            if (sel < 0 || sel > address_book->count)
             {
                 get_option(NONE, "Invalid SI.No. Press ENTER...");
                 continue;
@@ -792,12 +792,12 @@ Status delete_contact(AddressBook *address_book)
 	menu_header("Delete Contact");
 
 	int index = -1;
-	Status ret = list_contacts(address_book, "Delete Contact", &index, "Enter option: ", e_delete_contact);
+	Status ret = list_contacts(address_book, "Delete Contact", &index, "Enter option: ", e_delete);
 
 	if (ret == e_success)
 	{
 		ContactInfo *contact = &address_book->list[index];
-		printf("Delete '%s'? (y/n): ", contact->name[0]);
+		printf("Delete '%s'? (y/n): ", &contact->name);
 		
 		int confirm = get_option(CHAR, "");
 
