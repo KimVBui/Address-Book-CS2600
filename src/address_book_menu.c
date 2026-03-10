@@ -16,7 +16,7 @@
 //example input "get_option(NONE, "Press ENTER...");"
 int get_option(int type, const char *msg)
 {
-		char buffer[64];
+	char buffer[64];
 
 	/*Print message if provided*/
 	if(msg && msg[0] != '\0')
@@ -32,7 +32,7 @@ int get_option(int type, const char *msg)
 	}
 
 	/*If user just pressed ENTER*/
-	if(buffer[0]=="\n")
+	if(buffer[0] == '\n')
 	{
 		return e_new_line;
 	}
@@ -53,6 +53,7 @@ int get_option(int type, const char *msg)
 	else if (type == CHAR)
 	{
 		/*Return first character*/
+
 		return buffer[0];
 	}
 
@@ -123,7 +124,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 
 			//prints the first phone and email for clean format
 			printf("%-5d  %-30s   %-16s   %-30s\n",
-                   c->si_no,
+                   i + 1,
                    c->name[0],
                    c->phone_numbers[0],
                    c->email_addresses[0]);
@@ -131,7 +132,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 
 		//displays page number info
 		printf("\nShowing %d to %d of %d\n",
-			start +1,
+			start + 1,
 			end,
 			address_book->count);
 
@@ -185,7 +186,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
             int sel = get_option(NUM, "Enter SI.No to select: ");
 
 			//validates serial number
-            if (sel < 1 || sel > address_book->count)
+            if (sel < 0 || sel > address_book->count)
             {
                 get_option(NONE, "Invalid SI.No. Press ENTER...");
                 continue;
@@ -268,7 +269,7 @@ Status menu(AddressBook *address_book)
 				delete_contact(address_book);
 				break;
 			case e_list_contacts:
-				/* Add your implementation to call list_contacts function here */
+				list_contacts(address_book, "All Contacts", NULL, "Enter option: ", e_list);
 				break;
 			case e_save:
 				save_file(address_book);
@@ -283,48 +284,70 @@ Status menu(AddressBook *address_book)
 
 Status add_contacts(AddressBook *address_book)
 {
-	/* Add the functionality for adding contacts here */
-	menu_header("Adding Contracts");
-	if (address_book->count >= 5){
-		printf("Sorry, but your address book is full.");
-	}
+    menu_header("Adding Contacts");
 
-	char op = get_option(NUM, " ");
-	//don't need to make new variables for name, email, etc, they already exist.
-	ContactInfo *newContact = &address_book->list[address_book->count];
-	//The function up here, creates a pointer variable and addresses the enum function;
-	//Retrieves the memory address of address_book and goes to get the list from ContactInfo, and inside the list, it goes to receieve content of count from memory
+	// Not sure if this is needed anymore, I don't think there will be issues with sizing if
+	// we are changing the size of the array.
 
-	//infinite loop until op == 0
-	while (op == 0){
-		if (op == '1'){
-			printf("Enter the name:\n");
-			scanf("%s", (newContact->name[0])); //newContract is a pointer that references the variable in enum, and inside, addresses the location of the empty array spot
-			continue;
-		}
-		if(op == '2'){
-			printf("Enter the Phone Number:\n");
-			scanf("%s", (newContact->phone_numbers[0])); //Note: How it works is that the list will update the num location but name and everything else can be 0 bc they are still within the first element for every list, at least that's how i see it
-			continue;
-		}
-		if(op == '3'){
-			printf("Enter the Email ID: \n");
-			scanf("%s", (newContact->email_addresses[0]));
-			continue;
-		}
-		printf("0. Back");
-		printf("1. Name: %c", newContact->name[0]);
-		printf("2. Phone No 1: %d", newContact->phone_numbers[0]);
-		printf("3. Email ID 1: %c", newContact->email_addresses[0]);
-		printf("Please select an Option: \n");
-		scanf("%s", op);
-	}
-	//should make the si_no for this entry the next num bc it usually starts at 0 and we want 1
-	newContact->si_no = address_book->count + 1;
-	address_book->count++; //increases the count to set up for the next entry
-	//Gets all the inputs and puts them in the file; nevermind, add contracts isn't supposed to save
-	//here, goes back to the main menn
-	return e_success;
+    // if (address_book->count >= 5) {
+    //     printf("Sorry, but your address book is full.\n");
+    //     return e_fail;
+    // }
+
+	// Reallocate memory because address_book is getting bigger
+
+    ContactInfo *new_list = realloc(address_book->list, (address_book->count + 1) * sizeof(ContactInfo));
+    if (new_list == NULL) {
+        return e_fail;
+    }
+
+    address_book->list = new_list;
+
+    // Clear the new allocated memory
+    memset(&address_book->list[address_book->count], 0, sizeof(ContactInfo));
+
+    char op;
+    char nameBuffer[NAME_LEN];
+    char phoneBuffer[NUMBER_LEN];
+    char emailBuffer[EMAIL_ID_LEN];
+
+    // infinite loop until we say stop
+    while (1) {
+        printf("0. Leave & Save\n");
+        printf("1. Name: %s\n", address_book->list[address_book->count].name[0]);
+        printf("2. Phone No 1: %s\n", address_book->list[address_book->count].phone_numbers[0]);
+        printf("3. Email ID 1: %s\n", address_book->list[address_book->count].email_addresses[0]);
+
+        op = get_option(CHAR, "Enter option: ");
+
+        if (op == '1') {
+            printf("Enter the name:\n");
+            fgets(nameBuffer, NAME_LEN, stdin);
+            nameBuffer[strcspn(nameBuffer, "\r\n")] = '\0';
+            strcpy(address_book->list[address_book->count].name[0], nameBuffer);
+        }
+
+        if (op == '2') {
+            printf("Enter the Phone Number:\n");
+            fgets(phoneBuffer, NUMBER_LEN, stdin);
+            phoneBuffer[strcspn(phoneBuffer, "\r\n")] = '\0';
+            strcpy(address_book->list[address_book->count].phone_numbers[0], phoneBuffer);
+        }
+
+        if (op == '3') {
+            printf("Enter the Email ID: \n");
+            fgets(emailBuffer, EMAIL_ID_LEN, stdin);
+            emailBuffer[strcspn(emailBuffer, "\r\n")] = '\0';
+            strcpy(address_book->list[address_book->count].email_addresses[0], emailBuffer);
+        }
+
+        if (op == '0') {
+            break;
+        }
+    }
+
+    address_book->count++;
+    return e_success;
 }
 
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
@@ -360,12 +383,15 @@ Status search(const char *str, AddressBook *address_book, int loop_count, int fi
 		printf(": S.No : Name				:Phone No				:Email ID				:\n");
 		printf("=============================================================================\n");
 		printf(": %s : %s : %s : %s :\n", address_book->list[i].si_no, address_book->list[i].name, address_book->list[i].phone_numbers, address_book->list[i].email_addresses);
-		printf("Press q to exit: ");
-		if(scanf("%s", o) == 'q'){
-			return e_success;
-		}
+
+		get_option(NONE, "Press ENTER...");
+
+		return e_success;
 	}
 	else{
+		
+		get_option(NONE, "No Match found! Press ENTER...");
+
 		return e_no_match;
 	}
 
@@ -380,8 +406,9 @@ Status search_contact(AddressBook *address_book)
 		printf("Sorry, there are no contacts to search through. Please add contacts first.\n");
 		return e_no_match;
 	}
-	char op = get_option(NUM, "Press Enter...");
-	char item;
+	
+	// Buffer of 100 characters
+	char item[100];
 	char temp[2];
 
 	printf("0. Back\n");
@@ -389,38 +416,60 @@ Status search_contact(AddressBook *address_book)
 	printf("2. Phone No.\n");
 	printf("3. Email ID\n");
 	printf("4. Serial No.\n");
-	printf("\n");
-	printf("Please select an option: %s", op);
 
-	while (op == 0){
-		if (op == 1){
-			//search through names
-			printf("Please enter the name: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 1, NULL, e_search); //idk if it should be null or 0 for loop count
-		}
-		else if(op == 2){
-			//search through phone numbers
-			printf("Please enter the number: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 2, NULL, e_search);
-		}
-		else if(op == 3){ 
-			//search through email id
-			printf("Please enter the email id: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 3, NULL, e_search);
-		}
-		else if(op == 4){
-			//search through si id
-			printf("Please enter the SI ID: ");
-			scanf("%s", item);
-			search(&item, address_book, 0, 4, NULL, e_search);
-		}
+	printf("\n");
+
+	char op = get_option(NUM, "Enter option: ");
+
+	if (op == 1){
+		//search through names
+		printf("Please enter the name: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 1, NULL, e_search); //idk if it should be null or 0 for loop count
 	}
-	if(op == 0){
-		main_menu();
+	else if(op == 2){
+		//search through phone numbers
+		printf("Please enter the number: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 2, NULL, e_search);
 	}
+	else if(op == 3){ 
+		//search through email id
+		printf("Please enter the email id: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 3, NULL, e_search);
+	}
+	else if(op == 4){
+		//search through si id
+		printf("Please enter the SI ID: ");
+		scanf("%100s", item);
+
+		item[strcspn(item, "\n")] = '\0';
+
+		// flushes out the input
+		getchar();
+
+		search(&item, address_book, 0, 4, NULL, e_search);
+	}
+
 	return e_success;
 }
 
@@ -750,12 +799,12 @@ Status delete_contact(AddressBook *address_book)
 	menu_header("Delete Contact");
 
 	int index = -1;
-	Status ret = list_contacts(address_book, "Delete Contact", &index, "Enter option: ", e_delete_contact);
+	Status ret = list_contacts(address_book, "Delete Contact", &index, "Enter option: ", e_delete);
 
 	if (ret == e_success)
 	{
 		ContactInfo *contact = &address_book->list[index];
-		printf("Delete '%s'? (y/n): ", contact->name[0]);
+		printf("Delete '%s'? (y/n): ", &contact->name);
 		
 		int confirm = get_option(CHAR, "");
 
@@ -772,4 +821,6 @@ Status delete_contact(AddressBook *address_book)
 			get_option(NONE, "Contact deleted. Press ENTER...");
 		}
 	}
+
+	return e_success;
 }

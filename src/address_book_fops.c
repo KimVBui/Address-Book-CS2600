@@ -8,70 +8,53 @@
 #include <stdbool.h>
 
 #include "address_book.h"
+#include "address_book_fops.h"
 
 Status load_file(AddressBook *address_book)
 {
-	int ret = 0; // ret is a control variable. 0 means the file is openable
 	char line [100];
 	address_book->count = 0;
 	int tempCount = 0;
 	address_book->list = NULL;
 	address_book -> fp = NULL;
-	/* 
-	 * Check for file existence
-	 */
+	
+	// Check if the file actually exists
+
 	FILE *fp = fopen(DEFAULT_FILE,"r");
 	
 	if (fp == NULL && errno == ENOENT){
-		ret = 1;
+		// If it doesnt, create it with the csv header information.
+		fp = fopen(DEFAULT_FILE,"w");
+		if (fp == NULL){
+			return e_fail;
+		}
+		fprintf(fp, "Name,Phone,Email\n");
+		fclose(fp);
 	} 
 	else if (fp == NULL && errno != ENOENT ){
 		return e_fail;
 	} 
 	else {
-		ret = 0;
 		fclose(fp);
 	}
-	/* 
-	 * Create & open failed file 
-	 */
 	
-	if (ret == 1)
-	{
-		fp = fopen(DEFAULT_FILE,"w");
-		if (fp != NULL ){
-			fclose(fp);
-			} 
-		else {
-			return e_fail;
-		}
-	}
+	// Open the file in read mode
 	fp = fopen(DEFAULT_FILE,"r");
 	if(fp == NULL){
 		return e_fail;
 	}
 
-	/* 
-	 * Loop through the file, read each line, and stores the amount of lines in it
-	 */
-
+	// Read each of the non-blank lines in the file.
 	fgets(line,100,fp);
 	while (fgets(line,100,fp)){
 		int is_blank = 1;
-        for (int i = 0; line[i] != '\0'; i++) {
-            if (!isspace((unsigned char)line[i])) {
-                is_blank = 0;
+		for (int i = 0; line[i] != '\0'; i++) {
+			if (!isspace((unsigned char)line[i])) {
+				is_blank = 0;
 				break;
-            }
-        }
-        if (is_blank) {
-            continue; // Skip the rest of the loop and read the next line
-        } else{
-			size_t len = strlen(line);
-			while (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r')) {
-    			line[len-1] = '\0';
-    			len--;
 			}
+		}
+		if (!is_blank){
 			tempCount++;
 		}
 	}
@@ -83,60 +66,52 @@ Status load_file(AddressBook *address_book)
 		return e_success;
 	}
 	
-	if (tempCount > 0)
-	{
-		address_book->list = malloc(tempCount* sizeof(ContactInfo));
-		if (address_book->list == NULL) {
-    		return e_fail;
-		}
-		address_book->count = tempCount;
+	address_book->list = malloc(tempCount * sizeof(ContactInfo));
+	if (address_book->list == NULL) {
+		return e_fail;
 	}
+	address_book->count = tempCount;
 
 	/* 
-	 * Reopen the file
+	 * Reopen and parse file contents
 	 */
 	fp = fopen(DEFAULT_FILE,"r");
-
-	if (fp == NULL && errno != ENOENT ){
+	if (fp == NULL){
 		return e_fail;
-	} 
-	/* 
-	 * Loop through the file, read each line, get data and store it in memory
-	 */
+	}
+	
 	int index = 0;
 	fgets(line,100,fp);
 	while (fgets(line,100,fp)){
 		int is_blank = 1;
-        for (int i = 0; line[i] != '\0'; i++) {
-            if (!isspace((unsigned char)line[i])) {
-                is_blank = 0;
+		for (int i = 0; line[i] != '\0'; i++) {
+			if (!isspace((unsigned char)line[i])) {
+				is_blank = 0;
 				break;
-            }
-        }
-        if (is_blank) {
-            continue; // Skip the rest of the loop and read the next line
-        } else{
+			}
+		}
+		if (!is_blank){
 			size_t len = strlen(line);
 			while (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r')) {
-    			line[len-1] = '\0';
-    			len--;
+				line[len-1] = '\0';
+				len--;
 			}
-			char* name_token,*email_token,*phone_number_token;
-    		// Get tokens
-    		name_token = strtok(line, ",");
-			phone_number_token = strtok(NULL, ",");
-			email_token = strtok(NULL, ","); 
-			if(name_token == NULL || phone_number_token == NULL || email_token == NULL){
-				continue;
+			char* name_token = strtok(line, ",");
+			char* phone_number_token = strtok(NULL, ",");
+			char* email_token = strtok(NULL, ","); 
+			
+			if(name_token && phone_number_token && email_token){
+				strcpy(address_book->list[index].name[0], name_token);
+				strcpy(address_book->list[index].phone_numbers[0], phone_number_token);
+				strcpy(address_book->list[index].email_addresses[0], email_token);
+				index++;
 			}
-			strcpy(address_book->list[index].name[0], name_token);
-			strcpy(address_book->list[index].phone_numbers[0], phone_number_token);
-			strcpy(address_book->list[index].email_addresses[0], email_token);
-			index++;
 		}
 	}
-address_book->count = index;
+	
+	address_book->count = index;
 	fclose(fp);
+	
 	return e_success;
 }
 
@@ -152,12 +127,14 @@ Status save_file(AddressBook *address_book)
 	{
 		return e_fail;
 	}
+
 	fprintf(address_book->fp,"Name,Phone,Email\n");
+
 	for (int i= 0; i < address_book->count; i++){
 		fprintf(address_book->fp,"%s,%s,%s\n",address_book->list[i].name[0],
 			address_book->list[i].phone_numbers[0],address_book->list[i].email_addresses[0]);
 	}
-	/* 
+	/*
 	 * Add the logic to save the file
 	 * Make sure to do error handling
 	 */ 
@@ -166,3 +143,4 @@ Status save_file(AddressBook *address_book)
 
 	return e_success;
 }
+
