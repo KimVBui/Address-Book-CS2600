@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include "address_book.h"
 #include "address_book_menu.h"
+#include "address_book_fops.h"
 
 //#include "abk_fileops.h"
 //#include "abk_log.h"
@@ -245,7 +246,7 @@ Status menu(AddressBook *address_book)
 
 		option = get_option(NUM, "");
 
-		if ((address_book-> count == 0) && (option != e_add_contact))
+		if ((address_book-> count == 0) && (option != e_add_contact) && (option != e_exit))
 		{
 			get_option(NONE, "No entries found!!. Would you like to add? Use Add Contacts");
 
