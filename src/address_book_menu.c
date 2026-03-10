@@ -383,15 +383,15 @@ Status search_contact(AddressBook *address_book)
 	char item;
 	char temp[2];
 
-	printf("0. Back\n");
-	printf("1. Name\n");
-	printf("2. Phone No.\n");
-	printf("3. Email ID\n");
-	printf("4. Serial No.\n");
-	printf("\n");
-	printf("Please select an option: %s", op);
 
 	while (1){
+		printf("0. Back\n");
+		printf("1. Name\n");
+		printf("2. Phone No.\n");
+		printf("3. Email ID\n");
+		printf("4. Serial No.\n");
+		printf("\n");
+		printf("Please select an option: %s", op);
 		if (op == 1){
 			//search through names
 			printf("Please enter the name: ");
