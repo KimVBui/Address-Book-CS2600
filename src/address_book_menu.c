@@ -747,7 +747,29 @@ Status edit_contact(AddressBook *address_book)
 
 Status delete_contact(AddressBook *address_book)
 {
-	/* Add the functionality for delete contacts here */
+	menu_header("Delete Contact");
+
+	int index = -1;
+	Status ret = list_contacts(address_book, "Delete Contact", &index, "Enter option: ", e_delete_contact);
+
+	if (ret == e_success)
+	{
+		ContactInfo *contact = &address_book->list[index];
+		printf("Delete '%s'? (y/n): ", contact->name[0]);
+		
+		int confirm = get_option(CHAR, "");
+
+		if (confirm == 'y')
+		{
+			// Note: This doesn't actualty dedlete the conact, just replaces it with the last one
+			// and then reduces the count. Other methods like listing all the contacts should only
+			// loop up to the count!!!!
+
+			address_book->list[index] = address_book->list[address_book->count - 1];
+
+			address_book->count--;
+
+			get_option(NONE, "Contact deleted. Press ENTER...");
+		}
+	}
 }
-
-
